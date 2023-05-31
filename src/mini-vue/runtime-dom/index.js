@@ -11,6 +11,9 @@ const rendererOptions = {
   insert(child, parent, anchor){
     //anchor是锚点
     parent.insertBefore(child, anchor || null)
+  },
+  setElementText(el, text){
+    el.textContent = text
   }
 }
 

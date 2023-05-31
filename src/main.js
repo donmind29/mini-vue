@@ -9,9 +9,16 @@ const newApp = {
     }
   },
   render(){
-    const h3 = document.createElement('h3')
-    h3.textContent = this.title
-    return h3
+    // const h3 = document.createElement('h3')
+    // h3.textContent = this.title
+    // return h3
+    //使用我们自己写的createVNode去创建虚拟DOM
+    return createVNode('h3', {}, this.title)
+  },
+  mounted(){
+    setTimeout(() =>{
+      this.title = 'wow, data changed!'
+    }, 2000)
   }
 }
 createApp(newApp).mount('#app')

@@ -1,3 +1,4 @@
+import {reactive, effect} from '../reactivity'
 // 运行时通用代码
 //   -------------custom renderer api  --------------------
 export function createRenderer(options) {
@@ -6,9 +7,21 @@ export function createRenderer(options) {
     // 1、获取宿主元素
     const container = options.querySelector(selector)
     //2、渲染视图
-    const el = rootComponent.render.call(rootComponent.data())
-    // 3、追加到宿主
-    container.appendChild(el)
+    const observed = reactive(rootComponent.data())
+    //3、为组件定义一个更新函数
+    const componentUpdateFn = () =>{
+      const el = rootComponent.render.call(observed)
+      options.setElementText(container, '')
+      // 4、追加到宿主
+      container.appendChild(el)
+    }
+    effect(componentUpdateFn)
+    //初始化执行一次
+    componentUpdateFn()
+    //挂载钩子是否存在
+    if(rootComponent.mounted){
+      rootComponent.mounted.call(observed)
+    }
   }
   //返回一个渲染器实例
   return {
