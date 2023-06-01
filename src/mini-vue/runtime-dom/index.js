@@ -14,6 +14,13 @@ const rendererOptions = {
   },
   setElementText(el, text){
     el.textContent = text
+  },
+  createElement(tag){
+    return document.createElement(tag)
+  },
+  remove(el){
+    const parent = el.parentNode
+    parent && parent.removeChild(el)
   }
 }
 
@@ -25,5 +32,16 @@ function ensureRenderer(){
 //创建APP实例
 export function createApp(rootComponent){
   //接收根组件， 返回App实例
-  return ensureRenderer().createApp(rootComponent)
+  const app =  ensureRenderer().createApp(rootComponent)
+  //保存app.mount方法
+  const mount = app.mount
+  //重写app.mount方法， 包装一下以便去获取选择器
+  app.mount = function (selectorOrContainer){
+    //传入的是DOM元素，直接返回； 传入的是字符串，转换成DOM元素
+    const container = typeof selectorOrContainer == 'string' ?
+                      document.querySelector(selectorOrContainer) :
+                      selectorOrContainer
+    mount(container)
+  }
+  return app
 }
